@@ -1,0 +1,104 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+archivesBaseName = "signal-metadata-android"
+version          = version_number
+group            = group_info
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    sourceSets {
+        androidTest {
+            java.srcDirs = ['src/androidTest/java', project(':tests').file('src/test/java')]
+        }
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                def fileName = "${archivesBaseName}-${version}.aar"
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile "org.whispersystems:signal-protocol-android:${protocol_version}"
+    compile (project(':java')) {
+        exclude group: 'org.whispersystems', module: 'signal-protocol-java'
+    }
+}
+
+signing {
+    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: sonatypeRepo) {
+            authentication(userName: whisperSonatypeUsername, password: whisperSonatypePassword)
+        }
+
+        pom.project {
+            name 'signal-metadata-android'
+            packaging 'aar'
+            description 'Signal Protocol Plus cryptography library for Android'
+            url 'https://github.com/SignalApp/libsignal-metadata-java'
+
+            scm {
+                url 'scm:git@github.com:SignalApp/libsignal-metadata-java.git'
+                connection 'scm:git@github.com:SignalApp/libsignal-metadata-java.git'
+                developerConnection 'scm:git@github.com:SignalApp/libsignal-metadata-java.git'
+            }
+
+            licenses {
+                license {
+                    name 'GPLv3'
+                    url 'https://www.gnu.org/licenses/gpl-3.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    name 'Moxie Marlinspike'
+                }
+            }
+        }
+    }
+}
+
+task installArchives(type: Upload) {
+    description "Installs the artifacts to the local Maven repository."
+    configuration = configurations['archives']
+    repositories {
+        mavenDeployer {
+            repository url: "file://${System.properties['user.home']}/.m2/repository"
+        }
+    }
+}
+
