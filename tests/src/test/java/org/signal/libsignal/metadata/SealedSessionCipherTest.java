@@ -5,6 +5,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import junit.framework.TestCase;
 
+import org.signal.libsignal.metadata.SealedSessionCipher.DecryptionResult;
 import org.signal.libsignal.metadata.certificate.CertificateValidator;
 import org.signal.libsignal.metadata.certificate.InvalidCertificateException;
 import org.signal.libsignal.metadata.certificate.SenderCertificate;
@@ -23,6 +24,8 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 import org.whispersystems.libsignal.util.Pair;
 
+import java.util.UUID;
+
 public class SealedSessionCipherTest extends TestCase {
 
   public void testEncryptDecrypt() throws UntrustedIdentityException, InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException, InvalidMetadataMessageException, ProtocolDuplicateMessageException, ProtocolUntrustedIdentityException, ProtocolLegacyMessageException, ProtocolInvalidKeyException, InvalidMetadataVersionException, ProtocolInvalidVersionException, ProtocolInvalidMessageException, ProtocolInvalidKeyIdException, ProtocolNoSessionException, SelfSendException {
@@ -32,20 +35,21 @@ public class SealedSessionCipherTest extends TestCase {
     initializeSessions(aliceStore, bobStore);
 
     ECKeyPair           trustRoot         = Curve.generateKeyPair();
-    SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, new SignalProtocolAddress("+14151111111", 1));
+    SenderCertificate   senderCertificate = createCertificateFor(trustRoot, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
+    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1);
 
     byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
                                             senderCertificate, "smert za smert".getBytes());
 
 
-    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, new SignalProtocolAddress("+14152222222", 1));
+    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, UUID.fromString("e80f7bbe-5b94-471e-bd8c-2173654ea3d1"), "+14152222222", 1);
 
-    Pair<SignalProtocolAddress, byte[]> plaintext = bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
+    DecryptionResult plaintext = bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
 
-    assertEquals(new String(plaintext.second()), "smert za smert");
-    assertEquals(plaintext.first().getName(), "+14151111111");
-    assertEquals(plaintext.first().getDeviceId(), 1);
+    assertEquals(new String(plaintext.getPaddedMessage()), "smert za smert");
+    assertEquals(plaintext.getSenderUuid().get(), "9d0652a3-dcc3-4d11-975f-74d61598733f");
+    assertEquals(plaintext.getSenderE164().get(), "+14151111111");
+    assertEquals(plaintext.getDeviceId(), 1);
   }
 
   public void testEncryptDecryptUntrusted() throws Exception {
@@ -56,13 +60,13 @@ public class SealedSessionCipherTest extends TestCase {
 
     ECKeyPair           trustRoot         = Curve.generateKeyPair();
     ECKeyPair           falseTrustRoot    = Curve.generateKeyPair();
-    SenderCertificate   senderCertificate = createCertificateFor(falseTrustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, new SignalProtocolAddress("+14151111111", 1));
+    SenderCertificate   senderCertificate = createCertificateFor(falseTrustRoot, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
+    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1);
 
     byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
                                             senderCertificate, "и вот я".getBytes());
 
-    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, new SignalProtocolAddress("+14152222222",1));
+    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, UUID.fromString("e80f7bbe-5b94-471e-bd8c-2173654ea3d1"), "+14152222222", 1);
 
     try {
       bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
@@ -79,13 +83,13 @@ public class SealedSessionCipherTest extends TestCase {
     initializeSessions(aliceStore, bobStore);
 
     ECKeyPair           trustRoot         = Curve.generateKeyPair();
-    SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, new SignalProtocolAddress("+14151111111", 1));
+    SenderCertificate   senderCertificate = createCertificateFor(trustRoot, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
+    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1);
 
     byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
                                             senderCertificate, "и вот я".getBytes());
 
-    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, new SignalProtocolAddress("+14152222222", 1));
+    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, UUID.fromString("e80f7bbe-5b94-471e-bd8c-2173654ea3d1"), "+14152222222", 1);
 
     try {
       bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31338);
@@ -103,14 +107,14 @@ public class SealedSessionCipherTest extends TestCase {
 
     ECKeyPair           trustRoot         = Curve.generateKeyPair();
     ECKeyPair           randomKeyPair     = Curve.generateKeyPair();
-    SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, randomKeyPair.getPublicKey(), 31337);
-    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, new SignalProtocolAddress("+14151111111", 1));
+    SenderCertificate   senderCertificate = createCertificateFor(trustRoot, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1, randomKeyPair.getPublicKey(), 31337);
+    SealedSessionCipher aliceCipher       = new SealedSessionCipher(aliceStore, UUID.fromString("9d0652a3-dcc3-4d11-975f-74d61598733f"), "+14151111111", 1);
 
     byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
                                             senderCertificate, "smert za smert".getBytes());
 
 
-    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, new SignalProtocolAddress("+14152222222", 1));
+    SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, UUID.fromString("e80f7bbe-5b94-471e-bd8c-2173654ea3d1"), "+14152222222", 1);
 
     try {
       bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
@@ -121,7 +125,7 @@ public class SealedSessionCipherTest extends TestCase {
 
 
 
-  private SenderCertificate createCertificateFor(ECKeyPair trustRoot, String sender, int deviceId, ECPublicKey identityKey, long expires)
+  private SenderCertificate createCertificateFor(ECKeyPair trustRoot, UUID uuid, String e164, int deviceId, ECPublicKey identityKey, long expires)
       throws InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException {
     ECKeyPair serverKey = Curve.generateKeyPair();
 
@@ -140,7 +144,8 @@ public class SealedSessionCipherTest extends TestCase {
                                                                                               .toByteArray());
 
     byte[] senderCertificateBytes = SignalProtos.SenderCertificate.Certificate.newBuilder()
-                                                                              .setSender(sender)
+                                                                              .setSenderUuid(uuid.toString())
+                                                                              .setSenderE164(e164)
                                                                               .setSenderDevice(deviceId)
                                                                               .setIdentityKey(ByteString.copyFrom(identityKey.serialize()))
                                                                               .setExpires(expires)

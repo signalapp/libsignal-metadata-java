@@ -7,6 +7,7 @@ import org.signal.libsignal.metadata.SignalProtos;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.ecc.Curve;
 import org.whispersystems.libsignal.ecc.ECPublicKey;
+import org.whispersystems.libsignal.util.guava.Optional;
 
 
 public class SenderCertificate {
@@ -14,7 +15,8 @@ public class SenderCertificate {
   private final ServerCertificate signer;
   private final ECPublicKey       key;
   private final int               senderDeviceId;
-  private final String            sender;
+  private final Optional<String>  senderUuid;
+  private final Optional<String>  senderE164;
   private final long              expiration;
 
   private final byte[] serialized;
@@ -31,13 +33,19 @@ public class SenderCertificate {
 
       SignalProtos.SenderCertificate.Certificate certificate = SignalProtos.SenderCertificate.Certificate.parseFrom(wrapper.getCertificate());
 
-      if (!certificate.hasSigner() || !certificate.hasIdentityKey() || !certificate.hasSenderDevice() || !certificate.hasExpires() || !certificate.hasSender()) {
+      if (!certificate.hasSigner()       ||
+          !certificate.hasIdentityKey()  ||
+          !certificate.hasSenderDevice() ||
+          !certificate.hasExpires()      ||
+          (!certificate.hasSenderUuid() && !certificate.hasSenderE164()))
+      {
         throw new InvalidCertificateException("Missing fields");
       }
 
       this.signer         = new ServerCertificate(certificate.getSigner().toByteArray());
       this.key            = Curve.decodePoint(certificate.getIdentityKey().toByteArray(), 0);
-      this.sender         = certificate.getSender();
+      this.senderUuid     = certificate.hasSenderUuid() ? Optional.of(certificate.getSenderUuid()) : Optional.<String>absent();
+      this.senderE164     = certificate.hasSenderE164() ? Optional.of(certificate.getSenderE164()) : Optional.<String>absent();
       this.senderDeviceId = certificate.getSenderDevice();
       this.expiration     = certificate.getExpires();
 
@@ -62,8 +70,16 @@ public class SenderCertificate {
     return senderDeviceId;
   }
 
+  public Optional<String> getSenderUuid() {
+    return senderUuid;
+  }
+
+  public Optional<String> getSenderE164() {
+    return senderE164;
+  }
+
   public String getSender() {
-    return sender;
+    return senderUuid.or(senderE164).orNull();
   }
 
   public long getExpiration() {

@@ -28,12 +28,13 @@ import org.whispersystems.libsignal.protocol.PreKeySignalMessage;
 import org.whispersystems.libsignal.protocol.SignalMessage;
 import org.whispersystems.libsignal.state.SignalProtocolStore;
 import org.whispersystems.libsignal.util.ByteUtil;
-import org.whispersystems.libsignal.util.Pair;
+import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -45,14 +46,22 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class SealedSessionCipher {
 
-  private final SignalProtocolStore   signalProtocolStore;
-  private final SignalProtocolAddress localAddress;
+  private static final String TAG = SealedSessionCipher.class.getSimpleName();
+
+  private final SignalProtocolStore signalProtocolStore;
+  private final String              localE164Address;
+  private final String              localUuidAddress;
+  private final int                 localDeviceId;
 
   public SealedSessionCipher(SignalProtocolStore signalProtocolStore,
-                             SignalProtocolAddress localAddress)
+                             UUID localUuid,
+                             String localE164Address,
+                             int localDeviceId)
   {
     this.signalProtocolStore = signalProtocolStore;
-    this.localAddress        = localAddress;
+    this.localUuidAddress    = localUuid != null ? localUuid.toString() : null;
+    this.localE164Address    = localE164Address;
+    this.localDeviceId       = localDeviceId;
   }
 
   public byte[] encrypt(SignalProtocolAddress destinationAddress, SenderCertificate senderCertificate, byte[] paddedPlaintext)
@@ -75,7 +84,7 @@ public class SealedSessionCipher {
     return new UnidentifiedSenderMessage(ephemeral.getPublicKey(), staticKeyCiphertext, messageBytes).getSerialized();
   }
 
-  public Pair<SignalProtocolAddress, byte[]> decrypt(CertificateValidator validator, byte[] ciphertext, long timestamp)
+  public DecryptionResult decrypt(CertificateValidator validator, byte[] ciphertext, long timestamp)
       throws
       InvalidMetadataMessageException, InvalidMetadataVersionException,
       ProtocolInvalidMessageException, ProtocolInvalidKeyException,
@@ -105,9 +114,10 @@ public class SealedSessionCipher {
         throw new InvalidKeyException("Sender's certificate key does not match key used in message");
       }
 
-      if (content.getSenderCertificate().getSender().equals(localAddress.getName()) &&
-          content.getSenderCertificate().getSenderDeviceId() == localAddress.getDeviceId())
-      {
+      boolean isLocalE164 = localE164Address != null && localE164Address.equals(content.getSenderCertificate().getSenderE164().orNull());
+      boolean isLocalUuid = localUuidAddress != null && localUuidAddress.equals(content.getSenderCertificate().getSenderUuid().orNull());
+
+      if ((isLocalE164 || isLocalUuid) && content.getSenderCertificate().getSenderDeviceId() == localDeviceId) {
         throw new SelfSendException();
       }
     } catch (InvalidKeyException | InvalidMacException | InvalidCertificateException e) {
@@ -115,9 +125,10 @@ public class SealedSessionCipher {
     }
 
     try {
-      return new Pair<>(new SignalProtocolAddress(content.getSenderCertificate().getSender(),
-                                                  content.getSenderCertificate().getSenderDeviceId()),
-                        decrypt(content));
+      return new DecryptionResult(content.getSenderCertificate().getSenderUuid(),
+                                  content.getSenderCertificate().getSenderE164(),
+                                  content.getSenderCertificate().getSenderDeviceId(),
+                                  decrypt(content));
     } catch (InvalidMessageException e) {
       throw new ProtocolInvalidMessageException(e, content.getSenderCertificate().getSender(), content.getSenderCertificate().getSenderDeviceId());
     } catch (InvalidKeyException e) {
@@ -172,8 +183,7 @@ public class SealedSessionCipher {
   private byte[] decrypt(UnidentifiedSenderMessageContent message)
       throws InvalidVersionException, InvalidMessageException, InvalidKeyException, DuplicateMessageException, InvalidKeyIdException, UntrustedIdentityException, LegacyMessageException, NoSessionException
   {
-
-    SignalProtocolAddress sender = new SignalProtocolAddress(message.getSenderCertificate().getSender(), message.getSenderCertificate().getSenderDeviceId());
+    SignalProtocolAddress sender = getPreferredAddress(signalProtocolStore, message.getSenderCertificate());
 
     switch (message.getType()) {
       case CiphertextMessage.WHISPER_TYPE: return new SessionCipher(signalProtocolStore, sender).decrypt(new SignalMessage(message.getContent()));
@@ -228,6 +238,48 @@ public class SealedSessionCipher {
     }
   }
 
+  private static SignalProtocolAddress getPreferredAddress(SignalProtocolStore store, SenderCertificate certificate) {
+    SignalProtocolAddress uuidAddress = certificate.getSenderUuid().isPresent() ? new SignalProtocolAddress(certificate.getSenderUuid().get(), certificate.getSenderDeviceId()) : null;
+    SignalProtocolAddress e164Address = certificate.getSenderE164().isPresent() ? new SignalProtocolAddress(certificate.getSenderE164().get(), certificate.getSenderDeviceId()) : null;
+
+    if (uuidAddress != null && store.containsSession(uuidAddress)) {
+      return uuidAddress;
+    } else if (e164Address != null && store.containsSession(e164Address)) {
+      return e164Address;
+    } else {
+      return new SignalProtocolAddress(certificate.getSender(), certificate.getSenderDeviceId());
+    }
+  }
+
+  public static class DecryptionResult {
+    private final Optional<String> senderUuid;
+    private final Optional<String> senderE164;
+    private final int              deviceId;
+    private final byte[]           paddedMessage;
+
+    private DecryptionResult(Optional<String> senderUuid, Optional<String> senderE164, int deviceId, byte[] paddedMessage) {
+      this.senderUuid    = senderUuid;
+      this.senderE164    = senderE164;
+      this.deviceId      = deviceId;
+      this.paddedMessage = paddedMessage;
+    }
+
+    public Optional<String> getSenderUuid() {
+      return senderUuid;
+    }
+
+    public Optional<String> getSenderE164() {
+      return senderE164;
+    }
+
+    public int getDeviceId() {
+      return deviceId;
+    }
+
+    public byte[] getPaddedMessage() {
+      return paddedMessage;
+    }
+  }
 
   private static class EphemeralKeys {
     private final byte[]        chainKey;

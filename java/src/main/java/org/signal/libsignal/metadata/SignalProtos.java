@@ -1097,20 +1097,35 @@ public final class SignalProtos {
     public interface CertificateOrBuilder
         extends com.google.protobuf.MessageOrBuilder {
 
-      // optional string sender = 1;
+      // optional string senderE164 = 1;
       /**
-       * <code>optional string sender = 1;</code>
+       * <code>optional string senderE164 = 1;</code>
        */
-      boolean hasSender();
+      boolean hasSenderE164();
       /**
-       * <code>optional string sender = 1;</code>
+       * <code>optional string senderE164 = 1;</code>
        */
-      java.lang.String getSender();
+      java.lang.String getSenderE164();
       /**
-       * <code>optional string sender = 1;</code>
+       * <code>optional string senderE164 = 1;</code>
        */
       com.google.protobuf.ByteString
-          getSenderBytes();
+          getSenderE164Bytes();
+
+      // optional string senderUuid = 6;
+      /**
+       * <code>optional string senderUuid = 6;</code>
+       */
+      boolean hasSenderUuid();
+      /**
+       * <code>optional string senderUuid = 6;</code>
+       */
+      java.lang.String getSenderUuid();
+      /**
+       * <code>optional string senderUuid = 6;</code>
+       */
+      com.google.protobuf.ByteString
+          getSenderUuidBytes();
 
       // optional uint32 senderDevice = 2;
       /**
@@ -1209,27 +1224,27 @@ public final class SignalProtos {
               }
               case 10: {
                 bitField0_ |= 0x00000001;
-                sender_ = input.readBytes();
+                senderE164_ = input.readBytes();
                 break;
               }
               case 16: {
-                bitField0_ |= 0x00000002;
+                bitField0_ |= 0x00000004;
                 senderDevice_ = input.readUInt32();
                 break;
               }
               case 25: {
-                bitField0_ |= 0x00000004;
+                bitField0_ |= 0x00000008;
                 expires_ = input.readFixed64();
                 break;
               }
               case 34: {
-                bitField0_ |= 0x00000008;
+                bitField0_ |= 0x00000010;
                 identityKey_ = input.readBytes();
                 break;
               }
               case 42: {
                 org.signal.libsignal.metadata.SignalProtos.ServerCertificate.Builder subBuilder = null;
-                if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                if (((bitField0_ & 0x00000020) == 0x00000020)) {
                   subBuilder = signer_.toBuilder();
                 }
                 signer_ = input.readMessage(org.signal.libsignal.metadata.SignalProtos.ServerCertificate.PARSER, extensionRegistry);
@@ -1237,7 +1252,12 @@ public final class SignalProtos {
                   subBuilder.mergeFrom(signer_);
                   signer_ = subBuilder.buildPartial();
                 }
-                bitField0_ |= 0x00000010;
+                bitField0_ |= 0x00000020;
+                break;
+              }
+              case 50: {
+                bitField0_ |= 0x00000002;
+                senderUuid_ = input.readBytes();
                 break;
               }
             }
@@ -1280,20 +1300,20 @@ public final class SignalProtos {
       }
 
       private int bitField0_;
-      // optional string sender = 1;
-      public static final int SENDER_FIELD_NUMBER = 1;
-      private java.lang.Object sender_;
+      // optional string senderE164 = 1;
+      public static final int SENDERE164_FIELD_NUMBER = 1;
+      private java.lang.Object senderE164_;
       /**
-       * <code>optional string sender = 1;</code>
+       * <code>optional string senderE164 = 1;</code>
        */
-      public boolean hasSender() {
+      public boolean hasSenderE164() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional string sender = 1;</code>
+       * <code>optional string senderE164 = 1;</code>
        */
-      public java.lang.String getSender() {
-        java.lang.Object ref = sender_;
+      public java.lang.String getSenderE164() {
+        java.lang.Object ref = senderE164_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -1301,22 +1321,65 @@ public final class SignalProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            sender_ = s;
+            senderE164_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>optional string sender = 1;</code>
+       * <code>optional string senderE164 = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getSenderBytes() {
-        java.lang.Object ref = sender_;
+          getSenderE164Bytes() {
+        java.lang.Object ref = senderE164_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          sender_ = b;
+          senderE164_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      // optional string senderUuid = 6;
+      public static final int SENDERUUID_FIELD_NUMBER = 6;
+      private java.lang.Object senderUuid_;
+      /**
+       * <code>optional string senderUuid = 6;</code>
+       */
+      public boolean hasSenderUuid() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string senderUuid = 6;</code>
+       */
+      public java.lang.String getSenderUuid() {
+        java.lang.Object ref = senderUuid_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            senderUuid_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string senderUuid = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSenderUuidBytes() {
+        java.lang.Object ref = senderUuid_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          senderUuid_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -1330,7 +1393,7 @@ public final class SignalProtos {
        * <code>optional uint32 senderDevice = 2;</code>
        */
       public boolean hasSenderDevice() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <code>optional uint32 senderDevice = 2;</code>
@@ -1346,7 +1409,7 @@ public final class SignalProtos {
        * <code>optional fixed64 expires = 3;</code>
        */
       public boolean hasExpires() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
        * <code>optional fixed64 expires = 3;</code>
@@ -1362,7 +1425,7 @@ public final class SignalProtos {
        * <code>optional bytes identityKey = 4;</code>
        */
       public boolean hasIdentityKey() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional bytes identityKey = 4;</code>
@@ -1378,7 +1441,7 @@ public final class SignalProtos {
        * <code>optional .signal.ServerCertificate signer = 5;</code>
        */
       public boolean hasSigner() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <code>optional .signal.ServerCertificate signer = 5;</code>
@@ -1394,7 +1457,8 @@ public final class SignalProtos {
       }
 
       private void initFields() {
-        sender_ = "";
+        senderE164_ = "";
+        senderUuid_ = "";
         senderDevice_ = 0;
         expires_ = 0L;
         identityKey_ = com.google.protobuf.ByteString.EMPTY;
@@ -1413,19 +1477,22 @@ public final class SignalProtos {
                           throws java.io.IOException {
         getSerializedSize();
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          output.writeBytes(1, getSenderBytes());
-        }
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeUInt32(2, senderDevice_);
+          output.writeBytes(1, getSenderE164Bytes());
         }
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          output.writeFixed64(3, expires_);
+          output.writeUInt32(2, senderDevice_);
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          output.writeBytes(4, identityKey_);
+          output.writeFixed64(3, expires_);
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          output.writeBytes(4, identityKey_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           output.writeMessage(5, signer_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(6, getSenderUuidBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -1438,23 +1505,27 @@ public final class SignalProtos {
         size = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(1, getSenderBytes());
-        }
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeUInt32Size(2, senderDevice_);
+            .computeBytesSize(1, getSenderE164Bytes());
         }
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeFixed64Size(3, expires_);
+            .computeUInt32Size(2, senderDevice_);
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(4, identityKey_);
+            .computeFixed64Size(3, expires_);
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(4, identityKey_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(5, signer_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(6, getSenderUuidBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -1573,20 +1644,22 @@ public final class SignalProtos {
 
         public Builder clear() {
           super.clear();
-          sender_ = "";
+          senderE164_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          senderDevice_ = 0;
+          senderUuid_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
-          expires_ = 0L;
+          senderDevice_ = 0;
           bitField0_ = (bitField0_ & ~0x00000004);
-          identityKey_ = com.google.protobuf.ByteString.EMPTY;
+          expires_ = 0L;
           bitField0_ = (bitField0_ & ~0x00000008);
+          identityKey_ = com.google.protobuf.ByteString.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000010);
           if (signerBuilder_ == null) {
             signer_ = org.signal.libsignal.metadata.SignalProtos.ServerCertificate.getDefaultInstance();
           } else {
             signerBuilder_.clear();
           }
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
         }
 
@@ -1618,21 +1691,25 @@ public final class SignalProtos {
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
-          result.sender_ = sender_;
+          result.senderE164_ = senderE164_;
           if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.senderDevice_ = senderDevice_;
+          result.senderUuid_ = senderUuid_;
           if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
             to_bitField0_ |= 0x00000004;
           }
-          result.expires_ = expires_;
+          result.senderDevice_ = senderDevice_;
           if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
             to_bitField0_ |= 0x00000008;
           }
-          result.identityKey_ = identityKey_;
+          result.expires_ = expires_;
           if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
             to_bitField0_ |= 0x00000010;
+          }
+          result.identityKey_ = identityKey_;
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000020;
           }
           if (signerBuilder_ == null) {
             result.signer_ = signer_;
@@ -1655,9 +1732,14 @@ public final class SignalProtos {
 
         public Builder mergeFrom(org.signal.libsignal.metadata.SignalProtos.SenderCertificate.Certificate other) {
           if (other == org.signal.libsignal.metadata.SignalProtos.SenderCertificate.Certificate.getDefaultInstance()) return this;
-          if (other.hasSender()) {
+          if (other.hasSenderE164()) {
             bitField0_ |= 0x00000001;
-            sender_ = other.sender_;
+            senderE164_ = other.senderE164_;
+            onChanged();
+          }
+          if (other.hasSenderUuid()) {
+            bitField0_ |= 0x00000002;
+            senderUuid_ = other.senderUuid_;
             onChanged();
           }
           if (other.hasSenderDevice()) {
@@ -1699,76 +1781,150 @@ public final class SignalProtos {
         }
         private int bitField0_;
 
-        // optional string sender = 1;
-        private java.lang.Object sender_ = "";
+        // optional string senderE164 = 1;
+        private java.lang.Object senderE164_ = "";
         /**
-         * <code>optional string sender = 1;</code>
+         * <code>optional string senderE164 = 1;</code>
          */
-        public boolean hasSender() {
+        public boolean hasSenderE164() {
           return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
-         * <code>optional string sender = 1;</code>
+         * <code>optional string senderE164 = 1;</code>
          */
-        public java.lang.String getSender() {
-          java.lang.Object ref = sender_;
+        public java.lang.String getSenderE164() {
+          java.lang.Object ref = senderE164_;
           if (!(ref instanceof java.lang.String)) {
             java.lang.String s = ((com.google.protobuf.ByteString) ref)
                 .toStringUtf8();
-            sender_ = s;
+            senderE164_ = s;
             return s;
           } else {
             return (java.lang.String) ref;
           }
         }
         /**
-         * <code>optional string sender = 1;</code>
+         * <code>optional string senderE164 = 1;</code>
          */
         public com.google.protobuf.ByteString
-            getSenderBytes() {
-          java.lang.Object ref = sender_;
+            getSenderE164Bytes() {
+          java.lang.Object ref = senderE164_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            sender_ = b;
+            senderE164_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>optional string sender = 1;</code>
+         * <code>optional string senderE164 = 1;</code>
          */
-        public Builder setSender(
+        public Builder setSenderE164(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-          sender_ = value;
+          senderE164_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>optional string sender = 1;</code>
+         * <code>optional string senderE164 = 1;</code>
          */
-        public Builder clearSender() {
+        public Builder clearSenderE164() {
           bitField0_ = (bitField0_ & ~0x00000001);
-          sender_ = getDefaultInstance().getSender();
+          senderE164_ = getDefaultInstance().getSenderE164();
           onChanged();
           return this;
         }
         /**
-         * <code>optional string sender = 1;</code>
+         * <code>optional string senderE164 = 1;</code>
          */
-        public Builder setSenderBytes(
+        public Builder setSenderE164Bytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-          sender_ = value;
+          senderE164_ = value;
+          onChanged();
+          return this;
+        }
+
+        // optional string senderUuid = 6;
+        private java.lang.Object senderUuid_ = "";
+        /**
+         * <code>optional string senderUuid = 6;</code>
+         */
+        public boolean hasSenderUuid() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        /**
+         * <code>optional string senderUuid = 6;</code>
+         */
+        public java.lang.String getSenderUuid() {
+          java.lang.Object ref = senderUuid_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            senderUuid_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string senderUuid = 6;</code>
+         */
+        public com.google.protobuf.ByteString
+            getSenderUuidBytes() {
+          java.lang.Object ref = senderUuid_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            senderUuid_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string senderUuid = 6;</code>
+         */
+        public Builder setSenderUuid(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          senderUuid_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string senderUuid = 6;</code>
+         */
+        public Builder clearSenderUuid() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          senderUuid_ = getDefaultInstance().getSenderUuid();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string senderUuid = 6;</code>
+         */
+        public Builder setSenderUuidBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          senderUuid_ = value;
           onChanged();
           return this;
         }
@@ -1779,7 +1935,7 @@ public final class SignalProtos {
          * <code>optional uint32 senderDevice = 2;</code>
          */
         public boolean hasSenderDevice() {
-          return ((bitField0_ & 0x00000002) == 0x00000002);
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
          * <code>optional uint32 senderDevice = 2;</code>
@@ -1791,7 +1947,7 @@ public final class SignalProtos {
          * <code>optional uint32 senderDevice = 2;</code>
          */
         public Builder setSenderDevice(int value) {
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           senderDevice_ = value;
           onChanged();
           return this;
@@ -1800,7 +1956,7 @@ public final class SignalProtos {
          * <code>optional uint32 senderDevice = 2;</code>
          */
         public Builder clearSenderDevice() {
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
           senderDevice_ = 0;
           onChanged();
           return this;
@@ -1812,7 +1968,7 @@ public final class SignalProtos {
          * <code>optional fixed64 expires = 3;</code>
          */
         public boolean hasExpires() {
-          return ((bitField0_ & 0x00000004) == 0x00000004);
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
          * <code>optional fixed64 expires = 3;</code>
@@ -1824,7 +1980,7 @@ public final class SignalProtos {
          * <code>optional fixed64 expires = 3;</code>
          */
         public Builder setExpires(long value) {
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
           expires_ = value;
           onChanged();
           return this;
@@ -1833,7 +1989,7 @@ public final class SignalProtos {
          * <code>optional fixed64 expires = 3;</code>
          */
         public Builder clearExpires() {
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           expires_ = 0L;
           onChanged();
           return this;
@@ -1845,7 +2001,7 @@ public final class SignalProtos {
          * <code>optional bytes identityKey = 4;</code>
          */
         public boolean hasIdentityKey() {
-          return ((bitField0_ & 0x00000008) == 0x00000008);
+          return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         /**
          * <code>optional bytes identityKey = 4;</code>
@@ -1860,7 +2016,7 @@ public final class SignalProtos {
           if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
           identityKey_ = value;
           onChanged();
           return this;
@@ -1869,7 +2025,7 @@ public final class SignalProtos {
          * <code>optional bytes identityKey = 4;</code>
          */
         public Builder clearIdentityKey() {
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
           identityKey_ = getDefaultInstance().getIdentityKey();
           onChanged();
           return this;
@@ -1883,7 +2039,7 @@ public final class SignalProtos {
          * <code>optional .signal.ServerCertificate signer = 5;</code>
          */
         public boolean hasSigner() {
-          return ((bitField0_ & 0x00000010) == 0x00000010);
+          return ((bitField0_ & 0x00000020) == 0x00000020);
         }
         /**
          * <code>optional .signal.ServerCertificate signer = 5;</code>
@@ -1908,7 +2064,7 @@ public final class SignalProtos {
           } else {
             signerBuilder_.setMessage(value);
           }
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           return this;
         }
         /**
@@ -1922,7 +2078,7 @@ public final class SignalProtos {
           } else {
             signerBuilder_.setMessage(builderForValue.build());
           }
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           return this;
         }
         /**
@@ -1930,7 +2086,7 @@ public final class SignalProtos {
          */
         public Builder mergeSigner(org.signal.libsignal.metadata.SignalProtos.ServerCertificate value) {
           if (signerBuilder_ == null) {
-            if (((bitField0_ & 0x00000010) == 0x00000010) &&
+            if (((bitField0_ & 0x00000020) == 0x00000020) &&
                 signer_ != org.signal.libsignal.metadata.SignalProtos.ServerCertificate.getDefaultInstance()) {
               signer_ =
                 org.signal.libsignal.metadata.SignalProtos.ServerCertificate.newBuilder(signer_).mergeFrom(value).buildPartial();
@@ -1941,7 +2097,7 @@ public final class SignalProtos {
           } else {
             signerBuilder_.mergeFrom(value);
           }
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           return this;
         }
         /**
@@ -1954,14 +2110,14 @@ public final class SignalProtos {
           } else {
             signerBuilder_.clear();
           }
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
         }
         /**
          * <code>optional .signal.ServerCertificate signer = 5;</code>
          */
         public org.signal.libsignal.metadata.SignalProtos.ServerCertificate.Builder getSignerBuilder() {
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           onChanged();
           return getSignerFieldBuilder().getBuilder();
         }
@@ -3735,20 +3891,21 @@ public final class SignalProtos {
       "\n\032UnidentifiedDelivery.proto\022\006signal\"c\n\021" +
       "ServerCertificate\022\023\n\013certificate\030\001 \001(\014\022\021" +
       "\n\tsignature\030\002 \001(\014\032&\n\013Certificate\022\n\n\002id\030\001" +
-      " \001(\r\022\013\n\003key\030\002 \001(\014\"\302\001\n\021SenderCertificate\022" +
+      " \001(\r\022\013\n\003key\030\002 \001(\014\"\332\001\n\021SenderCertificate\022" +
       "\023\n\013certificate\030\001 \001(\014\022\021\n\tsignature\030\002 \001(\014\032" +
-      "\204\001\n\013Certificate\022\016\n\006sender\030\001 \001(\t\022\024\n\014sende" +
-      "rDevice\030\002 \001(\r\022\017\n\007expires\030\003 \001(\006\022\023\n\013identi" +
-      "tyKey\030\004 \001(\014\022)\n\006signer\030\005 \001(\0132\031.signal.Ser" +
-      "verCertificate\"\241\002\n\031UnidentifiedSenderMes" +
-      "sage\022\027\n\017ephemeralPublic\030\001 \001(\014\022\027\n\017encrypt",
-      "edStatic\030\002 \001(\014\022\030\n\020encryptedMessage\030\003 \001(\014" +
-      "\032\267\001\n\007Message\022<\n\004type\030\001 \001(\0162..signal.Unid" +
-      "entifiedSenderMessage.Message.Type\0224\n\021se" +
-      "nderCertificate\030\002 \001(\0132\031.signal.SenderCer" +
-      "tificate\022\017\n\007content\030\003 \001(\014\"\'\n\004Type\022\022\n\016PRE" +
-      "KEY_MESSAGE\020\001\022\013\n\007MESSAGE\020\002B-\n\035org.signal" +
-      ".libsignal.metadataB\014SignalProtos"
+      "\234\001\n\013Certificate\022\022\n\nsenderE164\030\001 \001(\t\022\022\n\ns" +
+      "enderUuid\030\006 \001(\t\022\024\n\014senderDevice\030\002 \001(\r\022\017\n" +
+      "\007expires\030\003 \001(\006\022\023\n\013identityKey\030\004 \001(\014\022)\n\006s" +
+      "igner\030\005 \001(\0132\031.signal.ServerCertificate\"\241" +
+      "\002\n\031UnidentifiedSenderMessage\022\027\n\017ephemera",
+      "lPublic\030\001 \001(\014\022\027\n\017encryptedStatic\030\002 \001(\014\022\030" +
+      "\n\020encryptedMessage\030\003 \001(\014\032\267\001\n\007Message\022<\n\004" +
+      "type\030\001 \001(\0162..signal.UnidentifiedSenderMe" +
+      "ssage.Message.Type\0224\n\021senderCertificate\030" +
+      "\002 \001(\0132\031.signal.SenderCertificate\022\017\n\007cont" +
+      "ent\030\003 \001(\014\"\'\n\004Type\022\022\n\016PREKEY_MESSAGE\020\001\022\013\n" +
+      "\007MESSAGE\020\002B-\n\035org.signal.libsignal.metad" +
+      "ataB\014SignalProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3778,7 +3935,7 @@ public final class SignalProtos {
           internal_static_signal_SenderCertificate_Certificate_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_signal_SenderCertificate_Certificate_descriptor,
-              new java.lang.String[] { "Sender", "SenderDevice", "Expires", "IdentityKey", "Signer", });
+              new java.lang.String[] { "SenderE164", "SenderUuid", "SenderDevice", "Expires", "IdentityKey", "Signer", });
           internal_static_signal_UnidentifiedSenderMessage_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_signal_UnidentifiedSenderMessage_fieldAccessorTable = new

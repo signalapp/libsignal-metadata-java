@@ -15,7 +15,8 @@ message ServerCertificate {
 
 message SenderCertificate {
     message Certificate {
-        optional string            sender        = 1;
+        optional string            senderE164    = 1;
+        optional string            senderUuid    = 6;
         optional uint32            senderDevice  = 2;
         optional fixed64           expires       = 3;
         optional bytes             identityKey   = 4;

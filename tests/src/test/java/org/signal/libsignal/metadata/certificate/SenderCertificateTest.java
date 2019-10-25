@@ -19,7 +19,8 @@ public class SenderCertificateTest extends TestCase {
     ECKeyPair key       = Curve.generateKeyPair();
 
     byte[] certificateBytes = SignalProtos.SenderCertificate.Certificate.newBuilder()
-                                                                        .setSender("+14152222222")
+                                                                        .setSenderUuid("9d0652a3-dcc3-4d11-975f-74d61598733f")
+                                                                        .setSenderE164("+14152222222")
                                                                         .setSenderDevice(1)
                                                                         .setExpires(31337)
                                                                         .setIdentityKey(ByteString.copyFrom(key.getPublicKey().serialize()))
@@ -43,7 +44,8 @@ public class SenderCertificateTest extends TestCase {
     ECKeyPair key       = Curve.generateKeyPair();
 
     byte[] certificateBytes = SignalProtos.SenderCertificate.Certificate.newBuilder()
-                                                                        .setSender("+14152222222")
+                                                                        .setSenderUuid("9d0652a3-dcc3-4d11-975f-74d61598733f")
+                                                                        .setSenderE164("+14152222222")
                                                                         .setSenderDevice(1)
                                                                         .setExpires(31337)
                                                                         .setIdentityKey(ByteString.copyFrom(key.getPublicKey().serialize()))
@@ -72,7 +74,8 @@ public class SenderCertificateTest extends TestCase {
     ECKeyPair key       = Curve.generateKeyPair();
 
     byte[] certificateBytes = SignalProtos.SenderCertificate.Certificate.newBuilder()
-                                                                        .setSender("+14152222222")
+                                                                        .setSenderUuid("9d0652a3-dcc3-4d11-975f-74d61598733f")
+                                                                        .setSenderE164("+14152222222")
                                                                         .setSenderDevice(1)
                                                                         .setExpires(31337)
                                                                         .setIdentityKey(ByteString.copyFrom(key.getPublicKey().serialize()))
