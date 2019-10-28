@@ -36,8 +36,12 @@ test {
     include 'org/signal/**'
 }
 
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
 signing {
-    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
     sign configurations.archives
 }
 
