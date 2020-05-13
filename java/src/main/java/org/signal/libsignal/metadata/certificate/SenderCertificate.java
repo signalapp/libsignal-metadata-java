@@ -79,7 +79,7 @@ public class SenderCertificate {
   }
 
   public String getSender() {
-    return senderUuid.or(senderE164).orNull();
+    return senderE164.or(senderUuid).orNull();
   }
 
   public long getExpiration() {
