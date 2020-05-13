@@ -1,5 +1,5 @@
 subprojects {
-    ext.version_number   = "0.1.1"
+    ext.version_number   = "0.1.2"
     ext.group_info       = "org.signal"
     ext.protocol_version = "2.8.1"
 
