@@ -4,7 +4,6 @@ package org.signal.libsignal.metadata.protocol;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.signal.libsignal.metadata.InvalidMetadataMessageException;
 import org.signal.libsignal.metadata.InvalidMetadataVersionException;
 import org.signal.libsignal.metadata.SignalProtos;
