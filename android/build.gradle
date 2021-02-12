@@ -59,6 +59,7 @@ dependencies {
     compile (project(':java')) {
         exclude group: 'org.whispersystems', module: 'signal-protocol-java'
     }
+    androidTestImplementation 'junit:junit:4.12'
 }
 
 def isReleaseBuild() {
@@ -75,10 +76,10 @@ uploadArchives {
     repositories.mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        repository(url: sonatypeRepo) {
-            authentication(userName: whisperSonatypeUsername, password: whisperSonatypePassword)
-        }
-
+//        repository(url: sonatypeRepo) {
+//            authentication(userName: whisperSonatypeUsername, password: whisperSonatypePassword)
+//        }
+//
         pom.project {
             name 'signal-metadata-android'
             packaging 'aar'

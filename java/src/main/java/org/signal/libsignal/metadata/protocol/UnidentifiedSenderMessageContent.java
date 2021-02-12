@@ -8,7 +8,7 @@ import org.signal.libsignal.metadata.InvalidMetadataMessageException;
 import org.signal.libsignal.metadata.SignalProtos;
 import org.signal.libsignal.metadata.certificate.InvalidCertificateException;
 import org.signal.libsignal.metadata.certificate.SenderCertificate;
-import org.whispersystems.libsignal.InvalidMessageException;
+import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.protocol.CiphertextMessage;
 
 public class UnidentifiedSenderMessageContent {
@@ -18,7 +18,7 @@ public class UnidentifiedSenderMessageContent {
   private final byte[]            content;
   private final byte[]            serialized;
 
-  public UnidentifiedSenderMessageContent(byte[] serialized) throws InvalidMetadataMessageException, InvalidCertificateException {
+  public UnidentifiedSenderMessageContent(byte[] serialized) throws InvalidMetadataMessageException, InvalidCertificateException, InvalidKeyException {
     try {
       SignalProtos.UnidentifiedSenderMessage.Message message = SignalProtos.UnidentifiedSenderMessage.Message.parseFrom(serialized);
 

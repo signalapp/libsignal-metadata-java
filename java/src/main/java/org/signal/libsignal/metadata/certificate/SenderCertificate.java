@@ -1,100 +1,100 @@
 package org.signal.libsignal.metadata.certificate;
 
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.signal.libsignal.metadata.SignalProtos;
+import org.signal.libsignal.metadata.encoding.UserId;
 import org.whispersystems.libsignal.InvalidKeyException;
+import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.ecc.Curve;
+import org.whispersystems.libsignal.ecc.ECPrivateKey;
 import org.whispersystems.libsignal.ecc.ECPublicKey;
-import org.whispersystems.libsignal.util.guava.Optional;
 
-
+/**
+ * SenderCertificate represents the address of a sender (userId + deviceId) along with an associated
+ * signature of the address. The userId is also the public key with which the signature was generated.
+ */
 public class SenderCertificate {
 
-  private final ServerCertificate signer;
-  private final ECPublicKey       key;
-  private final int               senderDeviceId;
-  private final Optional<String>  senderUuid;
-  private final Optional<String>  senderE164;
-  private final long              expiration;
-
   private final byte[] serialized;
-  private final byte[] certificate;
   private final byte[] signature;
+  private final byte[] userId; // 64 bytes
+  private final int deviceId;
 
-  public SenderCertificate(byte[] serialized) throws InvalidCertificateException {
+  /**
+   * Constructs a new SenderCertificate from its serialized representation.
+   *
+   * @param serialized
+   * @throws InvalidCertificateException if there was a problem deserializing the certificate
+   * @throws InvalidKeyException if the certificate's signature doesn't match what's expected based on using the userId as the public key
+   */
+  public SenderCertificate(byte[] serialized) throws InvalidCertificateException, InvalidKeyException {
     try {
       SignalProtos.SenderCertificate wrapper = SignalProtos.SenderCertificate.parseFrom(serialized);
 
-      if (!wrapper.hasSignature() || !wrapper.hasCertificate()) {
+      if (!wrapper.hasSignature() || !wrapper.hasAddress()) {
         throw new InvalidCertificateException("Missing fields");
       }
 
-      SignalProtos.SenderCertificate.Certificate certificate = SignalProtos.SenderCertificate.Certificate.parseFrom(wrapper.getCertificate());
+      SignalProtos.SenderCertificate.Address address = SignalProtos.SenderCertificate.Address.parseFrom(wrapper.getAddress());
 
-      if (!certificate.hasSigner()       ||
-          !certificate.hasIdentityKey()  ||
-          !certificate.hasSenderDevice() ||
-          !certificate.hasExpires()      ||
-          (!certificate.hasSenderUuid() && !certificate.hasSenderE164()))
-      {
+      if (!address.hasUserId() || !address.hasDeviceId()) {
         throw new InvalidCertificateException("Missing fields");
       }
 
-      this.signer         = new ServerCertificate(certificate.getSigner().toByteArray());
-      this.key            = Curve.decodePoint(certificate.getIdentityKey().toByteArray(), 0);
-      this.senderUuid     = certificate.hasSenderUuid() ? Optional.of(certificate.getSenderUuid()) : Optional.<String>absent();
-      this.senderE164     = certificate.hasSenderE164() ? Optional.of(certificate.getSenderE164()) : Optional.<String>absent();
-      this.senderDeviceId = certificate.getSenderDevice();
-      this.expiration     = certificate.getExpires();
+      this.userId   = address.getUserId().toByteArray();
+      this.deviceId = address.getDeviceId();
 
       this.serialized  = serialized;
-      this.certificate = wrapper.getCertificate().toByteArray();
       this.signature   = wrapper.getSignature().toByteArray();
 
+      // Using the userId as the public key, verify that the signature matches the content (deviceId and userId).
+      ECPublicKey publicKey = UserId.keyFrom(this.userId);
+      if (!Curve.verifySignature(publicKey, address.toByteArray(), this.signature)) {
+        throw new InvalidCertificateException("signature verification failed");
+      };
     } catch (InvalidProtocolBufferException | InvalidKeyException e) {
       throw new InvalidCertificateException(e);
     }
   }
 
-  public ServerCertificate getSigner() {
-    return signer;
-  }
-
-  public ECPublicKey getKey() {
-    return key;
-  }
-
-  public int getSenderDeviceId() {
-    return senderDeviceId;
-  }
-
-  public Optional<String> getSenderUuid() {
-    return senderUuid;
-  }
-
-  public Optional<String> getSenderE164() {
-    return senderE164;
-  }
-
-  public String getSender() {
-    return senderE164.or(senderUuid).orNull();
-  }
-
-  public long getExpiration() {
-    return expiration;
+  public SenderCertificate(byte[] userId, int deviceId, ECPrivateKey signingKey) throws InvalidKeyException {
+    byte[] address = SignalProtos.SenderCertificate.Address.newBuilder()
+            .setUserId(ByteString.copyFrom(userId))
+            .setDeviceId(deviceId)
+            .build().toByteArray();
+    this.signature = Curve.calculateSignature(signingKey, address);
+    this.serialized = SignalProtos.SenderCertificate.newBuilder()
+            .setAddress(ByteString.copyFrom(address))
+            .setSignature(ByteString.copyFrom(this.signature))
+            .build().toByteArray();
+    this.userId = userId;
+    this.deviceId = deviceId;
   }
 
   public byte[] getSerialized() {
     return serialized;
   }
 
-  public byte[] getCertificate() {
-    return certificate;
-  }
-
   public byte[] getSignature() {
     return signature;
+  }
+
+  public byte[] getUserId() {
+    return userId;
+  }
+
+  public String getSender() {
+    return UserId.encodeToString(userId);
+  }
+
+  public int getSenderDeviceId() {
+    return deviceId;
+  }
+
+  public SignalProtocolAddress getSenderAddress() {
+    return new SignalProtocolAddress(getSender(), deviceId);
   }
 }

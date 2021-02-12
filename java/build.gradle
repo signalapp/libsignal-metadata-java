@@ -81,10 +81,10 @@ uploadArchives {
     repositories.mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        repository(url: sonatypeRepo) {
-            authentication(userName: whisperSonatypeUsername, password: whisperSonatypePassword)
-        }
-
+//        repository(url: sonatypeRepo) {
+//            authentication(userName: whisperSonatypeUsername, password: whisperSonatypePassword)
+//        }
+//
         pom.project {
             name 'signal-metadata-java'
             packaging 'jar'
